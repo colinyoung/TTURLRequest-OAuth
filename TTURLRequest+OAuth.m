@@ -13,7 +13,7 @@
     [self.headers setObject:consumerKey forKey:@"oauth_consumer_key"];
     if (token) [self.headers setObject:token forKey:@"oauth_token"];
     [self.headers setObject:[[self class] stringForSignatureMethod:signatureMethod] forKey:@"oauth_signature_method"];
-    [self.headers setObject:[NSString stringWithFormat:@"%d", [[NSDate date] timeIntervalSince1970]] forKey:@"oauth_timestamp"];
+    [self.headers setObject:[NSString stringWithFormat:@"%.0f", [[NSDate date] timeIntervalSince1970]] forKey:@"oauth_timestamp"];
     [self.headers setObject:[[self class] nonce:kDefaultNonceLength] forKey:@"oauth_nonce"];
     if (version) [self.headers setObject:version forKey:@"oauth_version"];
 }
