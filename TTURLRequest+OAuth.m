@@ -1,32 +1,44 @@
 #import "TTURLRequest+OAuth.h"
+#import "RandomString.h"
+
+#define kDefaultNonceLength 20
 
 @implementation TTURLRequest (OAuth)
 
--(void)oauthifyWithConsumerKey:(NSString *)_consumerKey
-                         token:(NSString *)_token
-               signatureMethod:(TTURLRequestOAuthSignatureMethod)_signatureMethod
-                       version:(NSString *)_version {
+-(void)oauthifyWithConsumerKey:(NSString *)consumerKey
+                         token:(NSString *)token
+               signatureMethod:(TTURLRequestOAuthSignatureMethod)signatureMethod
+                       version:(NSString *)version {
     
-    [self.headers setObject:_consumerKey forKey:@"oauth_consumer_key"];
-    if (_token) [self.headers setObject:_token forKey:@"oauth_token"];
-    [self.headers setObject:[[self class] stringForSignatureMethod:_signatureMethod] forKey:@"oauth_signature_method"];
-    [self.headers setObject:[NSString stringWithFormat:@"%@", [[NSDate alloc] timeIntervalSince1970]] forKey:@"oauth_timestamp"];
-    // @todo oauth_nonce
-    if (_version) [self.headers setObject:_version forKey:@"oauth_version"];
+    [self.headers setObject:consumerKey forKey:@"oauth_consumer_key"];
+    if (token) [self.headers setObject:token forKey:@"oauth_token"];
+    [self.headers setObject:[[self class] stringForSignatureMethod:signatureMethod] forKey:@"oauth_signature_method"];
+    [self.headers setObject:[NSString stringWithFormat:@"%d", [[NSDate date] timeIntervalSince1970]] forKey:@"oauth_timestamp"];
+    [self.headers setObject:[[self class] nonce:kDefaultNonceLength] forKey:@"oauth_nonce"];
+    if (version) [self.headers setObject:version forKey:@"oauth_version"];
 }
 
+#pragma mark - Private
 +(NSString *)stringForSignatureMethod:(TTURLRequestOAuthSignatureMethod)_signatureMethod {
-    NSString *__ = @"";
     switch (_signatureMethod) {
-        case TTURLRequestOAuthSignatureMethodPlaintext:
-            __ = @"Plaintext";
+        case TTURLRequestOAuthSignatureMethodHMAC:
+            return @"HMAC-SHA1";
             break;
             
-        default:
-            __ = @"Plaintext";
+        case TTURLRequestOAuthSignatureMethodRSA:
+            return @"RSA-SHA1";
             break;
+            
+        case TTURLRequestOAuthSignatureMethodPlaintext:
+        default:
+            return @"PLAINTEXT";
     }
-    return __;
+    return @"Plaintext";
+}
+     
++(NSString *)nonce:(int)length {
+    NSString *nonce = [[[NSString alloc] initWithCString:randomStringOfLength(length) encoding:NSUTF8StringEncoding] autorelease];
+    return nonce;
 }
 
 @end

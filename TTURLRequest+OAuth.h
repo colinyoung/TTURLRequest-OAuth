@@ -1,4 +1,6 @@
 /*
+ 
+ // 2012 Colin Young
 
  Purpose
  =======
@@ -22,18 +24,20 @@
 #import "Three20/Three20.h"
 
 typedef enum {
-    TTURLRequestOAuthSignatureMethodPlaintext
-    /* @todo Research and add other signature methods */
+    TTURLRequestOAuthSignatureMethodPlaintext,
+    TTURLRequestOAuthSignatureMethodHMAC,
+    TTURLRequestOAuthSignatureMethodRSA
 } TTURLRequestOAuthSignatureMethod;
 
 @interface TTURLRequest (OAuth)
 
--(void)oauthifyWithConsumerKey:(NSString *)_consumerKey
-                         token:(NSString *)_token
-               signatureMethod:(TTURLRequestOAuthSignatureMethod)_signatureMethod
-                       version:(NSString *)_version;
+-(void)oauthifyWithConsumerKey:(NSString *)consumerKey
+                         token:(NSString *)token
+               signatureMethod:(TTURLRequestOAuthSignatureMethod)signatureMethod
+                       version:(NSString *)version;
 
 // @private
-+(NSString *)stringForSignatureMethod:(TTURLRequestOAuthSignatureMethod)_signatureMethod;
++(NSString *)stringForSignatureMethod:(TTURLRequestOAuthSignatureMethod)signatureMethod;
++(NSString *)nonce:(int)length;
 
 @end
