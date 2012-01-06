@@ -84,8 +84,6 @@
     return @"PLAINTEXT";
 }
 
-#pragma mark - Private
-
 +(NSString *)nonce:(int)length {
     char cNonce[length];
     randomString(cNonce, length);
