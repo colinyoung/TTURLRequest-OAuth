@@ -3,7 +3,7 @@
 // http://sam.zoy.org/wtfpl/
 
 #ifndef RandomString_h
-#define RandomString_h
+#define RandomString_h 1
 
 void randomString(char *str, int chars);
 
