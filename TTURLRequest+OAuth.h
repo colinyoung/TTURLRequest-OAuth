@@ -32,12 +32,10 @@ typedef enum {
 @interface TTURLRequest (OAuth)
 
 -(void)oauthifyWithConsumerKey:(NSString *)consumerKey
-                         token:(NSString *)token
+                consumerSecret:(NSString *)consumerSecret
+                   accessToken:(NSString *)accessToken
+             accessTokenSecret:(NSString *)accessTokenSecret
                signatureMethod:(TTURLRequestOAuthSignatureMethod)signatureMethod
                        version:(NSString *)version;
-
-// @private
-+(NSString *)stringForSignatureMethod:(TTURLRequestOAuthSignatureMethod)signatureMethod;
-+(NSString *)nonce:(int)length;
 
 @end
