@@ -5,6 +5,6 @@
 #ifndef cloudbot_ios_RandomString_h
 #define cloudbot_ios_RandomString_h
 
-char *randomStringOfLength(int length);
+void randomString(char *str, int chars);
 
 #endif
