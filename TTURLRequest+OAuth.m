@@ -63,7 +63,7 @@
         if (i < [[HTTPAuthorization allKeys] count]) [HTTPAuthorizationString appendString:@"&"];
     }
         
-    [self.headers setObject:HTTPAuthorizationString forKey:@"HTTP_AUTHORIZATION"];
+    [self.headers setObject:HTTPAuthorizationString forKey:@"Authorization"];
 }
 
 #pragma mark - Private
