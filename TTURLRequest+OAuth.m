@@ -34,17 +34,17 @@
                signatureMethod:(TTURLRequestOAuthSignatureMethod)signatureMethod
                        version:(NSString *)version {
     
-    NSMutableDictionary *HTTPAuthorization = [NSMutableDictionary dictionaryWithCapacity:4];
-    [HTTPAuthorization setObject:consumerKey forKey:@"oauth_consumer_key"];
+    NSMutableDictionary *HTTPAuthorization = [NSMutableDictionary dictionaryWithCapacity:5];
+    if (consumerKey) [HTTPAuthorization setObject:consumerKey forKey:@"oauth_consumer_key"];
     if (accessToken) [HTTPAuthorization setObject:accessToken forKey:@"oauth_token"];
-    [HTTPAuthorization setObject:[[self class] stringForSignatureMethod:signatureMethod] forKey:@"oauth_signature_method"];
+    [HTTPAuthorization setObject:[[TTURLRequest class] stringForSignatureMethod:signatureMethod] forKey:@"oauth_signature_method"];
     [HTTPAuthorization setObject:[NSString stringWithFormat:@"%.0f", [[NSDate date] timeIntervalSince1970]] forKey:@"oauth_timestamp"];
-    [HTTPAuthorization setObject:[[self class] nonce:kDefaultNonceLength] forKey:@"oauth_nonce"];
+    [HTTPAuthorization setObject:[[TTURLRequest class] nonce:kDefaultNonceLength] forKey:@"oauth_nonce"];
     if (version) [HTTPAuthorization setObject:version forKey:@"oauth_version"];
     
     if (!TTIsStringWithAnyText(self.httpMethod)) self.httpMethod = @"GET";
     
-    [HTTPAuthorization setObject:[[self class] signatureStringWithURL:[NSURL URLWithString:self.urlPath]
+    [HTTPAuthorization setObject:[[TTURLRequest class] signatureStringWithURL:[NSURL URLWithString:self.urlPath]
                                                            httpMethod:self.httpMethod
                                                             signatureMethod:signatureMethod
                                                                 accessToken:accessToken
@@ -65,6 +65,10 @@
     [self.headers setObject:HTTPAuthorizationString forKey:@"Authorization"];
 }
 
+@end
+
+@implementation TTURLRequest (OAuth_Private)
+
 #pragma mark - Private
 +(NSString *)stringForSignatureMethod:(TTURLRequestOAuthSignatureMethod)_signatureMethod {
     switch (_signatureMethod) {
@@ -83,12 +87,12 @@
     return @"PLAINTEXT";
 }
 
+/* Taken from OAuthConsumer::OAMutableURLRequest */
 +(NSString *)nonce:(int)length {
-    char cNonce[length];
-    randomString(cNonce, length);
-    NSString *nonce = [[[NSString alloc] initWithUTF8String:cNonce] autorelease];
-    if (!TTIsStringWithAnyText(nonce)) return @"";    
-    return nonce;
+    CFUUIDRef theUUID = CFUUIDCreate(NULL);
+    CFStringRef string = CFUUIDCreateString(NULL, theUUID);
+    NSMakeCollectable(theUUID);
+    return (NSString*)string;
 }
 
 #pragma mark - Signature
