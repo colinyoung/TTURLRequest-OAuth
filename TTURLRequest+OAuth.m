@@ -41,7 +41,7 @@
     [HTTPAuthorization setObject:[NSString stringWithFormat:@"%.0f", [[NSDate date] timeIntervalSince1970]] forKey:@"oauth_timestamp"];
     [HTTPAuthorization setObject:[[TTURLRequest class] nonce:kDefaultNonceLength] forKey:@"oauth_nonce"];
     if (version) [HTTPAuthorization setObject:version forKey:@"oauth_version"];
-    
+        
     if (!TTIsStringWithAnyText(self.httpMethod)) self.httpMethod = @"GET";
     
     [HTTPAuthorization setObject:[[TTURLRequest class] signatureStringWithURL:[NSURL URLWithString:self.urlPath]
@@ -91,8 +91,11 @@
 +(NSString *)nonce:(int)length {
     CFUUIDRef theUUID = CFUUIDCreate(NULL);
     CFStringRef string = CFUUIDCreateString(NULL, theUUID);
-    NSMakeCollectable(theUUID);
-    return (NSString*)string;
+    id _theUUID = NSMakeCollectable(theUUID);
+    NSString *retVal = [[(NSString*)string stringByReplacingOccurrencesOfString:@"-" withString:@""] lowercaseString];
+    CFRelease(string);
+    [_theUUID release];
+    return retVal;
 }
 
 #pragma mark - Signature
